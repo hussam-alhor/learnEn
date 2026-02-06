@@ -4,7 +4,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const connectDB = require('./src/config/db');
-// const { errorHandler } = require('./src/middleware/error.middleware');
+const { errorHandler, notFound } = require('./src/middlewares/errorHandler');
 // const allApiRoutes = require('./src/routes/index');
 
 
@@ -30,8 +30,16 @@ app.get('/', (req, res) => {
 
 // routes
 app.use("/api/auth" , require("./src/routes/authRoutes"))
+app.use("/api/users", require("./src/routes/userRoutes")); 
+app.use("/api/levels", require("./src/routes/levelRoutes")); 
+app.use("/api/tests", require("./src/routes/testRoutes")); 
 
-// app.use(errorHandler);
+
+
+
+// error handler
+app.use(notFound)
+app.use(errorHandler)
 
 
 // running

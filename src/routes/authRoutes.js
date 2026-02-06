@@ -2,9 +2,7 @@ const express = require("express")
 const { registerUserCtrl, loginUserCtrl } = require("../controllers/authController")
 const router = express.Router()
 
-// api/auth/register
-router.route("/register")
-    .post(registerUserCtrl)
+// api/auth/login
 router.route("/login")
     .post(loginUserCtrl)
 
