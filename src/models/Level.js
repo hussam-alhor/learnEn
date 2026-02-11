@@ -5,8 +5,11 @@ const joi = require("joi");
 // بنية الدرس (مضمنة)
 const lessonSchema = new mongoose.Schema({
     title: { type: String, required: true },
+    link : { type: String, required: true},
+    order: { type: Number, default: 0 },
+    description : {type: String , required : true},
     content: { type: String, required: true }, // يمكن أن يحتوي على HTML
-    order: { type: Number, default: 0 }
+    
 });
 
 // بنية المستوى الرئيسية
@@ -37,7 +40,11 @@ const levelSchema = new mongoose.Schema({
         ref: 'Level',
         default: null
     },
-    lessons: [lessonSchema],
+    lessons: {
+       type: [lessonSchema],
+       default: []
+    
+    },
     tests: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Test' // يشير إلى مودل 'Test'
@@ -46,7 +53,7 @@ const levelSchema = new mongoose.Schema({
     timestamps: true
 });
 
-const Level = mongoose.model('Level', levelSchema);
+const Level = mongoose.models.Level || mongoose.model('Level', levelSchema);
 
 // Validation for creating a new level
 function validateCreateLevel(obj) {
@@ -77,6 +84,8 @@ function validateUpdateLevel(obj) {
 function validateAddLesson(obj) {
     const schema = joi.object({
         title: joi.string().trim().min(3).required(),
+        link: joi.string().trim().required(),
+        description: joi.string().trim().required(),
         content: joi.string().trim().required(),
         order: joi.number()
     });
@@ -87,6 +96,8 @@ function validateAddLesson(obj) {
 function validateUpdateLesson(obj) {
     const schema = joi.object({
         title: joi.string().trim().min(3),
+         link: joi.string().trim(),
+        description: joi.string().trim(),
         content: joi.string().trim(),
         order: joi.number()
     });

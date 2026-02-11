@@ -4,7 +4,7 @@ const seedAdmin = require("../helpers/seedAdmin");
 // MONGO_URI_LOCAL
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URI);
+    const conn = await mongoose.connect(process.env.MONGO_URI_LOCAL);
 
     console.log(`MongoDB Connected: ${conn.connection.host}`);
     

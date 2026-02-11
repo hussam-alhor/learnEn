@@ -1,6 +1,11 @@
 const expressAsyncHandler = require("express-async-handler");
-const { Level, validateCreateLevel, validateUpdateLevel, validateAddLesson, validateUpdateLesson } = require("../models/Level");
-const cloudinary = require('cloudinary').v2; // استيراد cloudinary لحذف الصور
+const { link } = require("joi");
+const { Level } = require("../models/Level.JS");
+const { validateCreateLevel } = require("../models/Level.JS");
+const { validateUpdateLevel } = require("../models/Level.JS");
+const { validateAddLesson } = require("../models/Level.JS");
+const { validateUpdateLesson } = require("../models/Level.JS");
+const cloudinary = require('cloudinary').v2; 
 
 /**
  * @route   POST /api/levels
@@ -158,10 +163,12 @@ module.exports.addLessonToLevelCtrl = expressAsyncHandler(async (req, res) => {
 
     const newLesson = {
         title: req.body.title,
+        link : req.body.link,
+        description : req.body.description,
         content: req.body.content,
         order: req.body.order
     };
-    
+    console.log(newLesson)
     level.lessons.push(newLesson);
     await level.save();
 
@@ -197,6 +204,8 @@ module.exports.updateLessonInLevelCtrl = expressAsyncHandler(async (req, res) =>
 
     // تحديث خصائص الدرس
     if (req.body.title) lesson.title = req.body.title;
+    if (req.body.link) lesson.link = req.body.link;
+    if (req.body.description) lesson.description = req.body.description;
     if (req.body.content) lesson.content = req.body.content;
     if (req.body.order !== undefined) lesson.order = req.body.order;
     
