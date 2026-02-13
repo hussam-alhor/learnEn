@@ -31,15 +31,30 @@ const testSchema = new mongoose.Schema({
 const Test = mongoose.model('Test', testSchema);
 
 // Validation for creating a new Test
+
 function validateCreateTest(obj) {
     const schema = joi.object({
         title: joi.string().trim().min(3).required(),
         description: joi.string().trim(),
-        levelId: joi.string().required() 
+        levelId: joi.string().required(), 
+        
+        questions: joi.array().items(joi.object({
+            questionText: joi.string().required(),
+            options: joi.array().items(joi.string()).min(2).required(), 
+            correctOptionIndex: joi.number().min(0).required()
+        })).optional()
     });
     return schema.validate(obj);
 }
 
+function validateAddQuestion(obj) {
+    const schema = joi.object({
+        questionText: joi.string().required(),
+        options: joi.array().items(joi.string()).min(2).required(),
+        correctOptionIndex: joi.number().min(0).required()
+    });
+    return schema.validate(obj);
+}
 // Validation for updating a Test
 function validateUpdateTest(obj) {
     const schema = joi.object({
@@ -52,5 +67,6 @@ function validateUpdateTest(obj) {
 module.exports = {
     Test,
     validateCreateTest,
-    validateUpdateTest
+    validateUpdateTest,
+    validateAddQuestion
 };

@@ -1,6 +1,6 @@
 const expressAsyncHandler = require("express-async-handler");
 const { link } = require("joi");
-const {Level, validateCreateLevel, validateUpdateLevel, validateAddLesson, validateUpdateLesson} = require("../models/Level")
+const {Level, validateCreateLevel, validateUpdateLevel, validateAddLesson, validateUpdateLesson} = require("../models/Level");
 const cloudinary = require('cloudinary').v2; 
 
 /**

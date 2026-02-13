@@ -1,5 +1,5 @@
 const expressAsyncHandler = require("express-async-handler");
-const { Test, validateCreateTest, validateUpdateTest } = require("../models/Test");
+const { Test, validateCreateTest, validateUpdateTest, validateAddQuestion } = require("../models/Test");
 const { Level } = require("../models/Level");
 
 /**
@@ -8,12 +8,10 @@ const { Level } = require("../models/Level");
  * @access  Private (Only Admin)
  */
 module.exports.createTestCtrl = expressAsyncHandler(async (req, res) => {
-    // We now expect levelId to be in the request body
     const { error } = validateCreateTest(req.body);
     if (error) return res.status(400).json({ message: error.details[0].message });
 
-    const { levelId } = req.body;
-    if (!levelId) return res.status(400).json({ message: "levelId is required" });
+    const { levelId, questions } = req.body; // استخراج الأسئلة
 
     const level = await Level.findById(levelId);
     if (!level) return res.status(404).json({ message: "Level not found" });
@@ -21,7 +19,8 @@ module.exports.createTestCtrl = expressAsyncHandler(async (req, res) => {
     const test = await Test.create({
         title: req.body.title,
         description: req.body.description,
-        level: levelId
+        level: levelId,
+        questions: questions || [] 
     });
 
     level.tests.push(test._id);
@@ -29,6 +28,35 @@ module.exports.createTestCtrl = expressAsyncHandler(async (req, res) => {
 
     res.status(201).json(test);
 });
+
+
+/**
+ * @route   POST /api/tests/:id/questions
+ * @desc    Add a question to an existing test
+ * @access  Private (Only Admin)
+ */
+module.exports.addQuestionToTestCtrl = expressAsyncHandler(async (req, res) => {
+    // 1. Validate the question body
+    const { error } = validateAddQuestion(req.body);
+    if (error) return res.status(400).json({ message: error.details[0].message });
+
+    // 2. Validate correctOptionIndex logic (must be within options range)
+    const { options, correctOptionIndex } = req.body;
+    if (correctOptionIndex < 0 || correctOptionIndex >= options.length) {
+        return res.status(400).json({ message: "Invalid correctOptionIndex. It must be within the options range." });
+    }
+
+    // 3. Find the test
+    const test = await Test.findById(req.params.id);
+    if (!test) return res.status(404).json({ message: "Test not found" });
+
+    // 4. Add the question
+    test.questions.push(req.body);
+    await test.save();
+
+    res.status(200).json(test);
+});
+
 
 /**
  * @route   GET /api/tests

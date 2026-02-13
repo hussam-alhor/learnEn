@@ -5,7 +5,8 @@ const {
     getAllTestsCtrl,
     getTestByIdCtrl,
     updateTestCtrl,
-    deleteTestCtrl
+    deleteTestCtrl,
+    addQuestionToTestCtrl 
 } = require("../controllers/testController");
 const { verifyTokenAndOnlyAdmin, verifyToken } = require("../middlewares/verifyToken");
 
@@ -19,5 +20,10 @@ router.route("/:id")
     .get(verifyToken, getTestByIdCtrl)           // Get a single test
     .put(verifyTokenAndOnlyAdmin, updateTestCtrl)    // Update a test
     .delete(verifyTokenAndOnlyAdmin, deleteTestCtrl); // Delete a test
+
+
+// Route: /api/tests/:id/questions
+router.route("/:id/questions")
+    .post(verifyTokenAndOnlyAdmin, addQuestionToTestCtrl);
 
 module.exports = router;
